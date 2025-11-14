@@ -20,38 +20,113 @@ export default function BookingPage() {
     checkOut: "",
     guests: 1,
   });
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePayment = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
+    const sdkLoaded = await loadRazorpay();
+    if (!sdkLoaded) {
+      alert("Razorpay SDK failed to load");
+      return;
+    }
+
     try {
-      const res = await fetch("http://localhost:5000/api/phonepe/create-order", {
+      // Step 1: Create Razorpay Order from backend
+      const res = await fetch("http://localhost:5000/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: room.price,
           roomId: roomId,
-          userEmail: formData.email,
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json(); // parse JSON
 
-      if (data.success && data.redirectUrl) {
-        window.location.href = data.redirectUrl; // redirect to PhonePe
-      } else {
-        alert("Payment initiation failed");
-        console.error(data);
+      if (!data.success) {
+        alert("Failed to create payment order");
+        return;
       }
+
+      // Step 2: Razorpay Checkout Options
+      const options = {
+        key: data.key,
+        amount: data.order.amount,
+        currency: "INR",
+        name: "Hotel Booking",
+        description: room.name,
+        image: "/logo.png",
+        order_id: data.order.id,
+
+        method: {
+          upi: true,          // ENABLE UPI
+          card: true,
+          netbanking: true,
+          wallet: true,
+          paylater: true,
+        },
+
+        handler: async function (response) {
+          // Step 3: Verify Payment
+          const verifyRes = await fetch(
+            "http://localhost:5000/api/razorpay/verify",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+
+                bookingData: {
+                  roomId,
+                  ...formData,
+                  price: room.price,
+                },
+              }),
+            }
+          );
+
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            navigate(`/booking-success/${verifyData.bookingId}`);
+          } else {
+            alert("Payment verification failed");
+          }
+        },
+
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+        },
+
+        theme: {
+          color: "#A67B5B",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
-      console.error("Payment request error:", err);
-      alert("Something went wrong while starting payment");
+      console.error("Payment error:", err);
+      alert("Payment initiation failed");
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +157,7 @@ export default function BookingPage() {
               onChange={handleChange}
               className="border p-3 w-full rounded-lg"
             />
+
             <input
               type="email"
               name="email"
@@ -90,6 +166,7 @@ export default function BookingPage() {
               onChange={handleChange}
               className="border p-3 w-full rounded-lg"
             />
+
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="date"
@@ -98,6 +175,7 @@ export default function BookingPage() {
                 onChange={handleChange}
                 className="border p-3 rounded-lg"
               />
+
               <input
                 type="date"
                 name="checkOut"
@@ -106,6 +184,7 @@ export default function BookingPage() {
                 className="border p-3 rounded-lg"
               />
             </div>
+
             <select
               name="guests"
               onChange={handleChange}
