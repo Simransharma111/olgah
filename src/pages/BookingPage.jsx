@@ -6,7 +6,7 @@ const BACKEND = import.meta.env.VITE_BACKEND_URL;
 const rooms = [
   { id: 1, name: "Deluxe Wooden Room", price: 6500, image: "/room1.jpg" },
   { id: 2, name: "Family Suite", price: 7800, image: "/room2.jpg" },
-  { id: 3, name: "Luxury Cottage", price: 9000, image: "/room3.jpg" },
+  { id: 3, name: "Luxury Cottage", price: 9000, image: "/room1.jpg" },
   { id: 4, name: "Budget Room", price: 4000, image: "/room2.jpg" },
 ];
 
