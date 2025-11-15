@@ -13,9 +13,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Smooth scroll with offset for fixed navbar
   const scrollToSection = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMenuOpen(false);
+    setMenuOpen(false); // close mobile menu first
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        const yOffset = -80; // adjust for navbar height
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }, 300); // wait for mobile menu animation to finish
   };
 
   return (
@@ -30,15 +38,26 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 text-white">
-        <Link to="/" className="text-2xl font-serif tracking-wide font-bold text-[#EED7B8]">
+        {/* Brand */}
+        <Link
+          to="/"
+          className="text-2xl font-serif tracking-wide font-bold text-[#EED7B8]"
+        >
           Olgah Manali
         </Link>
 
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <button onClick={() => scrollToSection("rooms")} className="hover:text-[#EED7B8] transition-colors">
+          <button
+            onClick={() => scrollToSection("rooms")}
+            className="hover:text-[#EED7B8] transition-colors"
+          >
             Rooms
           </button>
-          <button onClick={() => scrollToSection("gallery")} className="hover:text-[#EED7B8] transition-colors">
+          <button
+            onClick={() => scrollToSection("gallery")}
+            className="hover:text-[#EED7B8] transition-colors"
+          >
             Gallery
           </button>
           <Link to="/about" className="hover:text-[#EED7B8] transition-colors">
@@ -50,17 +69,23 @@ export default function Navbar() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-[#7B5E3B] px-5 py-2 rounded-full shadow hover:bg-[#6b5033] transition-all"
-            onClick={() => scrollToSection("book")}
+            onClick={() => scrollToSection("rooms")}
           >
             Book Now
           </motion.button>
         </div>
 
-        <button className="md:hidden text-white" onClick={() => setMenuOpen(!menuOpen)}>
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
           {menuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
+      {/* Mobile Dropdown */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -71,10 +96,32 @@ export default function Navbar() {
             className="md:hidden bg-[#3B2B20]/95 backdrop-blur-sm border-t border-[#7B5E3B]/50"
           >
             <div className="flex flex-col items-center gap-5 py-6 text-white text-lg">
-              <button onClick={() => scrollToSection("rooms")} className="hover:text-[#EED7B8]">Rooms</button>
-              <button onClick={() => scrollToSection("gallery")} className="hover:text-[#EED7B8]">Gallery</button>
-              <Link to="/about" className="hover:text-[#EED7B8]" onClick={() => setMenuOpen(false)}>About Us</Link>
-              <Link to="/contact" className="hover:text-[#EED7B8]" onClick={() => setMenuOpen(false)}>Contact</Link>
+              <button
+                onClick={() => scrollToSection("rooms")}
+                className="hover:text-[#EED7B8]"
+              >
+                Rooms
+              </button>
+              <button
+                onClick={() => scrollToSection("gallery")}
+                className="hover:text-[#EED7B8]"
+              >
+                Gallery
+              </button>
+              <Link
+                to="/about"
+                className="hover:text-[#EED7B8]"
+                onClick={() => setMenuOpen(false)}
+              >
+                About Us
+              </Link>
+              <Link
+                to="/contact"
+                className="hover:text-[#EED7B8]"
+                onClick={() => setMenuOpen(false)}
+              >
+                Contact
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 onClick={() => scrollToSection("rooms")}
