@@ -24,7 +24,7 @@ const rooms = [
     name: "Luxury Cottage",
     description: "Private cottage with balcony and fireplace.",
     images: ["room1.jpg"],
-    price: 100,
+    price: 1000,
     availableRooms: 1,
   },
   {
