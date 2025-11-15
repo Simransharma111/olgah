@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -12,6 +12,11 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMenuOpen(false);
+  };
 
   return (
     <motion.nav
@@ -25,60 +30,37 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 text-white">
-        {/* Brand */}
-        <Link
-          to="/"
-          className="text-2xl font-serif tracking-wide font-bold text-[#EED7B8]"
-        >
+        <Link to="/" className="text-2xl font-serif tracking-wide font-bold text-[#EED7B8]">
           Olgah Manali
         </Link>
 
-        {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a
-            href="#rooms"
-            className="hover:text-[#EED7B8] transition-colors duration-200"
-          >
+          <button onClick={() => scrollToSection("rooms")} className="hover:text-[#EED7B8] transition-colors">
             Rooms
-          </a>
-          <a
-            href="#dining"
-            className="hover:text-[#EED7B8] transition-colors duration-200"
-          >
-            Dining
-          </a>
-          <a
-            href="#gallery"
-            className="hover:text-[#EED7B8] transition-colors duration-200"
-          >
+          </button>
+          <button onClick={() => scrollToSection("gallery")} className="hover:text-[#EED7B8] transition-colors">
             Gallery
-          </a>
-          <a
-            href="#contact"
-            className="hover:text-[#EED7B8] transition-colors duration-200"
-          >
+          </button>
+          <Link to="/about" className="hover:text-[#EED7B8] transition-colors">
+            About Us
+          </Link>
+          <Link to="/contact" className="hover:text-[#EED7B8] transition-colors">
             Contact
-          </a>
-          <motion.a
-            href="#book"
+          </Link>
+          <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-[#7B5E3B] px-5 py-2 rounded-full shadow hover:bg-[#6b5033] transition-all"
+            onClick={() => scrollToSection("book")}
           >
             Book Now
-          </motion.a>
+          </motion.button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-white"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
+        <button className="md:hidden text-white" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -89,42 +71,17 @@ export default function Navbar() {
             className="md:hidden bg-[#3B2B20]/95 backdrop-blur-sm border-t border-[#7B5E3B]/50"
           >
             <div className="flex flex-col items-center gap-5 py-6 text-white text-lg">
-              <a
-                href="#rooms"
-                className="hover:text-[#EED7B8]"
-                onClick={() => setMenuOpen(false)}
-              >
-                Rooms
-              </a>
-              <a
-                href="#dining"
-                className="hover:text-[#EED7B8]"
-                onClick={() => setMenuOpen(false)}
-              >
-                Dining
-              </a>
-              <a
-                href="#gallery"
-                className="hover:text-[#EED7B8]"
-                onClick={() => setMenuOpen(false)}
-              >
-                Gallery
-              </a>
-              <a
-                href="#contact"
-                className="hover:text-[#EED7B8]"
-                onClick={() => setMenuOpen(false)}
-              >
-                Contact
-              </a>
-              <motion.a
-                href="#book"
+              <button onClick={() => scrollToSection("rooms")} className="hover:text-[#EED7B8]">Rooms</button>
+              <button onClick={() => scrollToSection("gallery")} className="hover:text-[#EED7B8]">Gallery</button>
+              <Link to="/about" className="hover:text-[#EED7B8]" onClick={() => setMenuOpen(false)}>About Us</Link>
+              <Link to="/contact" className="hover:text-[#EED7B8]" onClick={() => setMenuOpen(false)}>Contact</Link>
+              <motion.button
                 whileHover={{ scale: 1.05 }}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => scrollToSection("book")}
                 className="bg-[#7B5E3B] px-6 py-2 rounded-full shadow hover:bg-[#6b5033] transition-all"
               >
                 Book Now
-              </motion.a>
+              </motion.button>
             </div>
           </motion.div>
         )}

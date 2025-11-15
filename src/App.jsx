@@ -5,6 +5,8 @@ import Room from "./pages/Room";
 import RoomList from "./pages/RoomList";
 import BookingPage from "./pages/BookingPage";
 import BookingSuccess from "./pages/BookingSuccess";
+import About from "./pages/AboutUs";
+import Contact from "./pages/ContactUs";
 
 export default function App(){
   return (
@@ -12,6 +14,8 @@ export default function App(){
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/room/:slug" element={<Room/>}/>
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
        <Route path="/book/:roomId" element={<BookingPage />} />
         <Route path="/success" element={<BookingSuccess/>}/>
       </Routes>
