@@ -77,7 +77,7 @@ export default function Navbar() {
               <Link to="/contact" className="hover:text-[#EED7B8]" onClick={() => setMenuOpen(false)}>Contact</Link>
               <motion.button
                 whileHover={{ scale: 1.05 }}
-                onClick={() => scrollToSection("book")}
+                onClick={() => scrollToSection("rooms")}
                 className="bg-[#7B5E3B] px-6 py-2 rounded-full shadow hover:bg-[#6b5033] transition-all"
               >
                 Book Now
